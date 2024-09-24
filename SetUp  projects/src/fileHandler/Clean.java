@@ -15,39 +15,69 @@ import java.util.Scanner;
 public class Clean {
 
 	String status = "";
-
+    int countFol = 0;
+	File location =null;
 	public Clean(File location) {
+		this.location=location;
+	}
+	
+	public String Start() {
 		recurse(location);
+		return countFol +" folders cleaned";
 	}
 
 	private void recurse(File location) {
+			
 		for (File file : location.listFiles()) {
 			if (file.isDirectory()) {
+				if(file.getName().contains("src"))
+					countFol++; //counts the number of projects we've cleaned
+				   
+				
 				if (file.getName().equalsIgnoreCase(".settings"))
 					deleletFol(file);
-				else if (file.getName().equalsIgnoreCase("bin"))
-					deleletFol(file);
-				else
+				else if(!file.getName().contains("#"))
 					recurse(file);
-			} else if ((file.getName().equalsIgnoreCase(".project")) || (file.getName().equals("..classpath")))
-				status += "\n" + file.delete();
-			else if ((file.getName().contains(".bat"))) {
+				
+			} else if ((file.getName().equalsIgnoreCase(".project")) || (file.getName().equals(".classpath")))
+			{
 				Scanner scanner;
 				String line = "";
 				
 				try {
-					scanner = new Scanner(new File("docs\\"+file.getName()));
+					scanner = new Scanner(new File(file.getName()));
 					while (scanner.hasNext()) {
 						line += scanner.nextLine() + "\n";
 					}
 					scanner.close();
-					
-					writeFile(file, line);
 				} catch (FileNotFoundException e) {
-					   System.out.println("FileNotFoundException Clean-Recurse()-scanner");
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
+
+				writeFile(file, line);
 				
 			}
+			else if ((file.getName().contains("build.bat"))) {
+			
+				Scanner scanner;
+				String line = "";
+				
+				try {
+					scanner = new Scanner(new File("docs\\build.bat"));
+					while (scanner.hasNext()) {
+						line += scanner.nextLine() + "\n";
+					}
+					scanner.close();
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				writeFile(file, line);
+			}
+			
+			
 
 		}
 

@@ -36,7 +36,37 @@ public class ManageFile {
 			}
 		}
 	}
-
+    
+	public static void relocateFiles(File file) {
+		for (File f : file.listFiles()) {
+			if(f.isDirectory()){
+				File fol = f.listFiles()[0];
+				if(f.getName().equals(fol.getName())){
+					for (File fol1 : fol.listFiles()) {
+						moveFile(f, fol1);
+					}
+					fol.deleteOnExit();
+					fol.delete();
+				}
+			}
+		}
+	}
+	public static void moveFile(File newLocation,File file){
+		if(file.isDirectory()){
+			for (File f : file.listFiles()) {
+				File newLoc = new File(newLocation,file.getName());
+				newLoc.mkdirs();
+				moveFile(newLoc, f);
+				file.deleteOnExit();
+				file.delete();
+            }
+		}else{
+				File newFile = new File(newLocation,file.getName());
+				file.renameTo(newFile);
+			}
+		
+	}
+	
 	public static void unzipFile(File[] file) {
 		for (File f : file) {
 			if (f.isDirectory()) {
@@ -54,6 +84,6 @@ public class ManageFile {
 			}
 
 		}
-
+        relocateFiles(file[0].getParentFile());
 	}
 }

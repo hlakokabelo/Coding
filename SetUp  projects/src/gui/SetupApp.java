@@ -1,6 +1,7 @@
 package gui;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import fileHandler.Clean;
@@ -17,8 +18,9 @@ public class SetupApp extends StackPane {
 	BorderPane bp = new BorderPane();
 
 	FileChooser fc = new FileChooser();
-
+	TextArea txtArea = new TextArea();
 	DirectoryChooser dc = new DirectoryChooser();
+	File initialDir = new File("C:\\Users\\kB\\Documents\\ASSISTANT\\#Marking");
 
 	public SetupApp() {
 		mainUI();
@@ -31,38 +33,77 @@ public class SetupApp extends StackPane {
 		btnUnzip.setMinHeight(40);
 		btnUnzip.setMinWidth(140);
 
+		Button btnFindzip = new Button("Find zips and unzip");
+		btnFindzip.setMinHeight(40);
+		btnFindzip.setMinWidth(140);
+
 		Button btnClean = new Button("Select fol to clean");
 		btnClean.setMinHeight(40);
 		btnClean.setMinWidth(140);
 
-		TextArea txtArea = new TextArea();
 		txtArea.setEditable(false);
 
 		btnUnzip.setOnAction(e -> {
-			txtArea.appendText(unzipAction() + "\n");
+			unzipAction();
+		});
+
+		btnFindzip.setOnAction(e -> {
+			Findzip();
 		});
 
 		btnClean.setOnAction(e -> {
-			txtArea.appendText(cleanAction() + "\n");
+			cleanAction();
 		});
 
-		VBox vb = new VBox(10, btnUnzip, btnClean);
+		VBox vb = new VBox(10, btnUnzip, btnClean, btnFindzip);
 
 		bp.setLeft(vb);
 		bp.setCenter(txtArea);
 
 	}
 
-	private String cleanAction() {
-
+	private void Findzip() {
+		dc.setInitialDirectory(getInitialDir());
+		ArrayList<File> zips = new ArrayList<>();
 		File file = dc.showDialog(null);
 		if (file != null) {
-			new Clean(file);
+			Findzip(file, zips);
+
+			File[] tempFile = toList(zips);
+			ManageFile.unzipFile(tempFile);
+			ManageFile.delZips(tempFile);
+			ManageFile.delZips(tempFile);
+			txtArea.appendText("done");
 		}
-		return " ";
 	}
 
-	private String unzipAction() {
+	private void Findzip(File dir, ArrayList<File> zips) {
+		if (dir.isDirectory()) {
+			for (File file : dir.listFiles()) {
+				Findzip(file, zips);
+			}
+		} else if (dir.getName().contains(".zip")) {
+			zips.add(dir);
+		}
+	}
+
+	private void cleanAction() {
+		dc.setInitialDirectory(getInitialDir());
+		File file = dc.showDialog(null);
+		if (file != null) {
+			Clean cleaner = new Clean(file);
+			txtArea.appendText(cleaner.Start());
+		}
+
+	}
+
+	private File getInitialDir() {
+		return (initialDir.exists() ? initialDir : null);
+	}
+
+	private void unzipAction() {
+
+		fc.setInitialDirectory(getInitialDir());
 		List<File> files = fc.showOpenMultipleDialog(null);
 		if (files != null) {
 			fc.setInitialDirectory(files.get(0).getParentFile());
@@ -71,9 +112,9 @@ public class SetupApp extends StackPane {
 			ManageFile.unzipFile(tempFile);
 			ManageFile.delZips(tempFile);
 			ManageFile.delZips(tempFile);
-			return "Done";
+			txtArea.appendText("done");
 		}
-		return " ";
+
 	}
 
 	private File[] toList(List<File> files) {

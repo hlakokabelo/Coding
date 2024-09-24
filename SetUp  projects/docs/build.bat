@@ -13,11 +13,11 @@ REM Paths for JDK
 REM Remember to change JAVA_HOME to the correct path on your system
 echo Change JAVA_HOME path
 
-set JAVA_HOME=C:\jdk-17
+set JAVA_HOME=C:\jdk-21
 set PATH=%JAVA_HOME%\bin;%PATH%
 REM Paths for JavaFX
 set USE_JAVAFX=true
-set JAVAFX_HOME=C:\javafx-17
+set JAVAFX_HOME=C:\javafx-sdk-21
 set JAVAFX_MODULES=javafx.base,javafx.controls,javafx.fxml,javafx.graphics,javafx.media
 set JAVAFX_ARGS=
 if %USE_JAVAFX%==true (set JAVAFX_ARGS=--module-path %JAVAFX_HOME%\lib --add-modules=%JAVAFX_MODULES%)
@@ -63,7 +63,7 @@ IF /I "%ERRORLEVEL%" NEQ "0" (
 REM Compile project by compiling just Main. Main will reference required classes.
 :COMPILE
 echo ~~~ Compiling project ~~~
-javac %JAVAFX_ARGS% -sourcepath %PRAC_SRC% -cp %PRAC_BIN%;%PRAC_LIB% -d %PRAC_BIN% %PRAC_SRC%\Main.java
+javac %JAVAFX_ARGS% -sourcepath %PRAC_SRC% -cp %PRAC_BIN%;%PRAC_LIB% -d %PRAC_BIN% %PRAC_SRC%\MainSetup.java
 IF /I "%ERRORLEVEL%" NEQ "0" (
     set ERRMSG=~~! Error compiling project !~~
     GOTO ERROR
@@ -80,7 +80,7 @@ IF /I "%ERRORLEVEL%" NEQ "0" (
 REM Run project by running Main.
 :RUN
 echo ~~~ Running project ~~~
-java %JAVAFX_ARGS% -cp %PRAC_BIN%;%PRAC_LIB% Main
+java %JAVAFX_ARGS% -cp %PRAC_BIN%;%PRAC_LIB% MainSetup
 IF /I "%ERRORLEVEL%" NEQ "0" (
     set ERRMSG=~~! Error running project !~~
     GOTO ERROR
